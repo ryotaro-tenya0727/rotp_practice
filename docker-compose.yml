@@ -1,0 +1,35 @@
+version: '3'
+
+# 名前つきボリューム
+volumes:
+  mysql_data:
+services:
+  authorization_end_point_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - '.:/authorization_end_point_app/'
+    ports:
+      - '3005:3005'
+    tty: true
+    stdin_open: true
+    depends_on:
+      - db
+    links:
+      - db:database
+    networks:
+      - default
+      - shared-network
+  db:
+    image: mysql:8.0
+    volumes:
+      - 'mysql_data:/var/lib/mysql'
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - '3310:3310'
+
+networks:
+  shared-network:
+    external: true
